@@ -305,6 +305,9 @@ public:
   // Sets whether or not the text should auto scroll
   void set_autoscroll(bool enable) noexcept { m_autoscroll = enable; }
 
+  // Sets the terminal window's title
+  void set_window_name(const char *name) noexcept { m_window_name = name; }
+
   // Get last window size
   ImVec2 get_size() const noexcept { return m_current_size; }
 
@@ -422,8 +425,8 @@ private:
   bool m_should_show_next_frame{true};
   bool m_close_request{false};
 
-  const char *const m_window_name;
-  ImGuiWindowFlags  m_flags{ImGuiWindowFlags_None};
+  const char      *m_window_name{nullptr};
+  ImGuiWindowFlags m_flags{ImGuiWindowFlags_None};
 
   int  m_base_width;
   int  m_base_height;
