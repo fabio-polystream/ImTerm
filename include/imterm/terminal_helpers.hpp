@@ -18,6 +18,14 @@
 ///                                                                                                                                     ///
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+///////////////////////////////////////
+//Kasper de Bruin//////////////////////
+/////26-10-23//////////////////////////
+////////////////////////////////////////
+//Fixed include errors
+//Made logger_name_ a uniq ptr so we can pass it through to spdlog
+//Fixed buffer reference error. This now uses fmt
+
 #include <set>
 #include <array>
 
@@ -25,7 +33,7 @@
 #if __has_include("spdlog/spdlog.h")
 #include "spdlog/common.h"
 #include "spdlog/formatter.h"
-#include "spdlog/pattern_formatter.h"
+#include "spdlog/details/pattern_formatter.h"
 #include "spdlog/details/log_msg.h"
 #include "spdlog/sinks/base_sink.h"
 
@@ -204,8 +212,10 @@ namespace ImTerm {
 	public:
 		using typename TermHBase::term_t;
 
+
 		explicit basic_spdlog_terminal_helper(std::string terminal_to_terminal_logger_name = "ImTerm Terminal")
-			: logger_name_{std::move(terminal_to_terminal_logger_name)} {
+            : logger_name_(std::make_unique<std::string>(terminal_to_terminal_logger_name))
+        {
 			set_terminal_pattern_("%T.%e - [%^command line%$]: %v", message::type::error);
 			set_terminal_pattern_("%T.%e - %^%v%$", message::type::user_input);
 			set_terminal_pattern_("%T.%e - %^%v%$", message::type::cmd_history_completion);
@@ -225,8 +235,8 @@ namespace ImTerm {
 		virtual ~basic_spdlog_terminal_helper() noexcept = default;
 
 		std::optional<ImTerm::message> format(std::string str, [[maybe_unused]] ImTerm::message::type type) {
-			spdlog::details::log_msg msg(logger_name_, {}, str);
-			spdlog::memory_buf_t buff{};
+			spdlog::details::log_msg msg(getLoggerName(), {}, str);
+			fmt::memory_buffer buff{};
 			terminal_formatter_[static_cast<int>(type)]->format(msg, buff);
 
 			ImTerm::message term_msg = details::to_imterm_msg(msg);
@@ -266,7 +276,7 @@ namespace ImTerm {
 				return;
 			}
 			assert(terminal_ != nullptr);
-            spdlog::memory_buf_t buff{};
+            fmt::memory_buffer buff{};
 			SinkBase::formatter_->format(msg, buff);
 			terminal_->add_message({details::to_imterm_severity(msg.level), fmt::to_string(buff)
 								 , msg.color_range_start, msg.color_range_end, false});
@@ -274,9 +284,13 @@ namespace ImTerm {
 
 		void flush_() override {}
 
-		term_t* terminal_{};
+        [[nodiscard]] const std::string* getLoggerName() const {
+            return logger_name_.get();
+        }
+
+        term_t* terminal_{};
 		std::array<std::unique_ptr<spdlog::formatter>, 3> terminal_formatter_{}; // user_input, error, cmd_history_completion (c.f. ImTerm::message::type)
-		std::string logger_name_;
+        std::unique_ptr<std::string> logger_name_;
 	};
 
 

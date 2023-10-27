@@ -22,6 +22,12 @@
 # SOFTWARE.                                                                      #
 ##################################################################################
 
+##/////////////////////////////////////
+##Kasper de Bruin//////////////////////
+##///26-10-23//////////////////////////
+##/////////////////////////////////////
+# Added support for AppleClang
+
 include(CheckCXXCompilerFlag)
 include(CheckCCompilerFlag)
 
@@ -1003,6 +1009,8 @@ function(setup_target target)
 	elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" OR "${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
 		setup_gcc(${target} OPTIONS ${ARGN})
 	elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR "${CMAKE_C_COMPILER_ID}" STREQUAL "Clang")
+		setup_clang(${target} OPTIONS ${ARGN})
+	elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang" OR "${CMAKE_C_COMPILER_ID}" STREQUAL "AppleClang")
 		setup_clang(${target} OPTIONS ${ARGN})
 	else()
 		message(WARNING "Unsupported compiler (${CMAKE_CXX_COMPILER_ID}) setup")

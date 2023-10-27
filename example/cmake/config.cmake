@@ -1,4 +1,9 @@
-# detect the OS
+##/////////////////////////////////////
+##Kasper de Bruin//////////////////////
+##///26-10-23//////////////////////////
+##/////////////////////////////////////
+# Added support for AppleClang
+
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
 	set(CONFIG_OS_WINDOWS 1)
 	if(${CMAKE_SIZEOF_VOID_P} EQUAL 4)
@@ -31,9 +36,13 @@ else()
 	return()
 endif()
 
+
 # detect the compiler and its version
 if(CMAKE_CXX_COMPILER MATCHES ".*clang[+][+]" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
 	set(CONFIG_COMPILER_CLANG 1)
+
+elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang" OR "${CMAKE_C_COMPILER_ID}" STREQUAL "AppleClang")
+		set(CONFIG_COMPILER_CLANG 1)
 elseif(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
 	set(CONFIG_COMPILER_GCC 1)
 elseif(MSVC)
