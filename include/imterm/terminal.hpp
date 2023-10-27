@@ -33,9 +33,7 @@
 #include "utils.hpp"
 #include "misc.hpp"
 
-#ifdef IMTERM_USE_FMT
 #include "fmt/format.h"
-#endif
 
 namespace ImTerm {
 
@@ -161,7 +159,6 @@ public:
   // returns current autocompletion position
   position get_autocomplete_pos() const { return m_autocomplete_pos; }
 
-#ifdef IMTERM_USE_FMT
   // logs a colorless text to the message panel added as terminal message with
   // info severity
   template <typename... Args>
@@ -175,7 +172,6 @@ public:
   void add_formatted_err(const char *fmt, Args &&...args) {
     add_text_err(fmt::format(fmt, std::forward<Args>(args)...));
   }
-#endif
 
   // logs a text to the message panel added as terminal message with info
   // severity
